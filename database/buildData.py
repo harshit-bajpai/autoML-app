@@ -25,7 +25,7 @@ class buildData:
         Generate data for sklearn regression
         """
         from sklearn.datasets import make_regression
-        X, y = make_regression(n_samples=n_samples, n_features=n_features,
+        self.X, self.y = make_regression(n_samples=n_samples, n_features=n_features,
                                 n_informative=n_informative, n_targets=n_targets,
                                 noise=noise, shuffle=shuffle, random_state=random_state)             
-        return self.create_data_Xy(X, y)
+        return self.create_data_Xy(self.X, self.y)
