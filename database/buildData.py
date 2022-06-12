@@ -10,12 +10,13 @@ class buildData:
         self.data = pd.DataFrame()
         print(f"Experiment {self.experiment_name} initialized.")
     
-    def create_data_Xy(self, X, y):
+    def create_df_Xy(self):
         """
         Create dataframe with X and y
         """
-        self.data = pd.DataFrame(X)
-        self.data['target'] = y
+        self.data = pd.DataFrame(self.X, 
+                columns= [f"feat_{i}" for i in range(self.X.shape[1])])
+        self.data['target'] = self.y
         return self.data
     
     def sklearn_regression_data(self, n_samples, n_features, 
@@ -28,4 +29,14 @@ class buildData:
         self.X, self.y = make_regression(n_samples=n_samples, n_features=n_features,
                                 n_informative=n_informative, n_targets=n_targets,
                                 noise=noise, shuffle=shuffle, random_state=random_state)             
-        return self.create_data_Xy(self.X, self.y)
+        return self.create_df_Xy()
+    
+    def data_profile(self):
+        """
+        Print data profile
+        """
+        if self.data.empty:
+            print("Data is empty.")
+        else:
+            print(f"Shape of data: {self.data.shape}")
+            print(f"Data columns: \n{self.data.columns}")
