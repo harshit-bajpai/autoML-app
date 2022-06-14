@@ -20,7 +20,7 @@ class buildData:
         return self.data
     
     def sklearn_regression_data(self, n_samples, n_features, 
-                n_informative, n_targets, noise=0.0, 
+                n_informative, n_targets=1, noise=0.0, 
                 shuffle=False, random_state=101):
         """
         Generate data for sklearn regression
