@@ -6,13 +6,14 @@ import streamlit as st
 def setup_page_skeleton():
 
     st.set_page_config(page_title="ETL", page_icon="📈", layout="wide")
-    st.markdown("# ETL Data")
-    return
+    st.markdown("# 📈 Extract, Transform, Load")
+    experiment_name = st.text_input("Enter experiment name:", "fuzzy_bohr", 16)
 
-def build_data():
+    return experiment_name
+
+def build_data(experiment_name):
     from buildData import buildData
 
-    experiment_name = st.text_input("Enter experiment name:", "fuzzy_bohr", 16)
     dataObj = buildData(experiment_name)
     
     with st.container():
@@ -39,8 +40,24 @@ def build_data():
 
 def main():
 
-    setup_page_skeleton()
-    build_data() 
+    experiment_name= setup_page_skeleton()
+    option = st.selectbox("Select an option:", ["Build data", "Load data"], index=1)
+
+    if option == "Build data":
+        build_data(experiment_name) 
+    elif option == "Load data":
+        st.write("Load data functionality coming soon!")
+        with st.expander("Format of data required for loading it to the application"):
+            st.write("""
+                The data must be in a CSV file with the following columns:
+                - `id`: unique identifier for each sample
+                - `target`: the target value
+                - `feature_1`: the first feature
+                - `feature_2`: the second feature
+                - `feature_3`: the third feature
+                ......
+                - `feature_n`: the nth feature
+            """)
 
     return
 
