@@ -14,5 +14,5 @@ def main():
     return
 
 if __name__ == "__main__":
-    sys.path.insert(1, "../modelDev/")
+    sys.path.insert(1, "./modelDev/")
     main()

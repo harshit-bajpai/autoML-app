@@ -1,9 +1,4 @@
-import logging
-
 import streamlit as st
-
-if "shared" not in st.session_state:
-   st.session_state["shared"] = True
 
 st.set_page_config(page_title="autoML", page_icon="👋", layout="wide")
 

@@ -3,5 +3,5 @@ base = "dark"
 font="sans serif"
 
 [browser]
-serverAddress = "192.168.4.33"
+serverAddress = "192.168.4.33" # IP address of the server
 serverPort = 8501
