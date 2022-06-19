@@ -2,7 +2,7 @@ from database.buildData import buildData
 import sys
 sys.path.insert(1, "./database/")
 
-def test_buildData_default():
+def test_buildData_default() -> None:
     """
     Test default buildData
     """
