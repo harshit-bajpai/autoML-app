@@ -1,7 +1,13 @@
-[theme]
-base = "dark"
-font="sans serif"
+[logger]
+level = "info"
+
+[client]
+showErrorDetails = false 
 
 [browser]
 serverAddress = "192.168.4.33" # IP address of the server
 serverPort = 8501
+
+[theme]
+base = "dark"
+font="sans serif"

@@ -7,7 +7,8 @@ def setup_page_skeleton():
     return
 
 def create_json_config():
-    config = {"run_info": 
+    try:
+        config = {"run_info": 
                 {"experiment_name": st.session_state["experiment_name"],
                     "runtime_start": st.session_state["runtime_start"]},
             "data_info": 
@@ -26,15 +27,18 @@ def create_json_config():
             "model_eval_info":
                 {"metrics": {}}
             }
-    return config
+        return config
+    except Exception as err:
+        st.error(f"Ran into an error while creating json config")
 
 def main():
-
-    setup_page_skeleton()
-    with st.container():
-        st.write("Download configuration functionality coming soon!")
-        st.json(create_json_config())
-    return
+    try:
+        setup_page_skeleton()
+        with st.container():
+            st.write("Download configuration functionality coming soon!")
+            st.json(create_json_config())
+    except Exception as err:
+        st.error(f"Ran into an error while loading page 5")
 
 if __name__ == "__main__":
     main()
