@@ -9,7 +9,7 @@ def setup_page_skeleton():
     st.set_page_config(page_title="ETL", page_icon="📈", layout="wide")
     st.markdown("# 📈 Extract, Transform, Load")
     experiment_name = st.text_input("Enter experiment name:", "fuzzy_bohr", 16)
-
+    st.session_state["experiment_name"] = experiment_name
     return experiment_name
 
 def build_data(experiment_name):
@@ -31,12 +31,14 @@ def build_data(experiment_name):
         df = dataObj.sklearn_regression_data(n_samples, n_features, 
             n_informative, n_targets, noise=noise)
         st.write(f"Runtime: {time.time()-t:.2f} seconds")
-        if "data" not in st.session_state:
-            st.session_state["data"] = df.to_dict()
+        st.session_state["data"] = df.to_dict()
 
         with st.container():
             st.subheader("Data profile:")
             st.write(f"Shape of data: {df.shape}")
+            st.session_state["data_shape"] = str(list(df.shape))
+            st.session_state["n_features"] = n_features
+            st.session_state["n_targets"] = n_targets
             st.write("Dataframe head:")
             st.dataframe(df.head())
             st.write("Dataframe descriptive statistics:")
