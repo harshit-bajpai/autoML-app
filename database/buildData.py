@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from randomDateGen import randomDateGen
+from database.randomDateGen import randomDateGen
 
 class buildData:
     """ 
