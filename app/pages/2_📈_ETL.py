@@ -3,6 +3,7 @@ import time
 
 import streamlit as st
 
+
 def setup_page_skeleton():
 
     st.set_page_config(page_title="ETL", page_icon="📈", layout="wide")
@@ -15,6 +16,7 @@ def build_data(experiment_name):
     from buildData import buildData
 
     dataObj = buildData(experiment_name)
+    df = dataObj.data
     
     with st.container():
         st.subheader("Build data configuration:")
@@ -29,6 +31,8 @@ def build_data(experiment_name):
         df = dataObj.sklearn_regression_data(n_samples, n_features, 
             n_informative, n_targets, noise=noise)
         st.write(f"Runtime: {time.time()-t:.2f} seconds")
+        if "data" not in st.session_state:
+            st.session_state["data"] = df.to_dict()
 
         with st.container():
             st.subheader("Data profile:")
@@ -37,6 +41,7 @@ def build_data(experiment_name):
             st.dataframe(df.head())
             st.write("Dataframe descriptive statistics:")
             st.dataframe(df.describe().transpose())
+    return
 
 def main():
 
@@ -44,7 +49,7 @@ def main():
     option = st.selectbox("Select an option:", ["Build data", "Load data"], index=1)
 
     if option == "Build data":
-        build_data(experiment_name) 
+        build_data(experiment_name)    
     elif option == "Load data":
         st.write("Load data functionality coming soon!")
         with st.expander("Format of data required for loading it to the application"):
@@ -59,8 +64,6 @@ def main():
                 - `feature_n`: the nth feature
             """)
 
-    return
-
 if __name__ == "__main__":
-    sys.path.insert(1, "../database/")
+    sys.path.insert(1, "./database/")
     main()

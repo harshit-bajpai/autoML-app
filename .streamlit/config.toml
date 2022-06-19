@@ -1,3 +1,7 @@
 [theme]
 base = "dark"
 font="sans serif"
+
+[browser]
+serverAddress = "192.168.4.33"
+serverPort = 8501

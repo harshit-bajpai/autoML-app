@@ -1,3 +1,6 @@
 #cache files
 *.pyc
 .devcontainer/
+
+#log
+logs/
