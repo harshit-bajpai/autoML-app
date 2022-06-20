@@ -1,32 +1,33 @@
 import sys
 import time
+import json
+import logging
+import traceback
+import logging
 
 import streamlit as st
 import pandas as pd
 
+PAGE_NAME = "2_ETL"
 
 def setup_page_skeleton():
     try:
+
         st.set_page_config(page_title="ETL", page_icon="📈", layout="wide")
         st.markdown("# 📈 Extract, Transform, Load")
-        experiment_name = st.text_input("Enter experiment name:", "", 16)
-        if experiment_name != "":
-            st.session_state["experiment_name"] = experiment_name
-            st.session_state["runtime_start"] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-            return experiment_name
-        else:
-            exp = KeyError("Experiment name is empty")
-            st.exception(exp)
-            return None
+        
     except Exception as err:
-        st.error(f"Page 2 ran into an error while setting up skeleton")
+        st.error(f"{PAGE_NAME} page ran into an error while setting up skeleton.")
+        logging.error(f"{PAGE_NAME} page ran into an error while setting up skeleton.\
+            \n{err}\n{traceback.format_exc()}")
         return ""
 
 def build_data_st(experiment_name):
-    from buildData import buildData
+    from database.buildData import buildData
 
     dataObj = buildData(experiment_name)
     df = dataObj.data
+    logging.info(f"buildData object generated.")
     
     with st.container():
         st.subheader("Build data configuration:")
@@ -40,11 +41,15 @@ def build_data_st(experiment_name):
 
     if st.button("▶️ Run"):
         t = time.time()
+        logging.info(f"buildData object data generation started.")
         df = dataObj.regression_data(n_samples=n_samples, n_features=n_features, 
             n_informative=n_informative, n_targets=n_targets, noise=noise, 
             id_col=id_col, timestamp_col=timestamp_col)
+        logging.info(f"buildData object data generation completed in {time.time() - t:.3f} seconds.")
+        logging.info(f"Dataframe generated with {df.shape[0]} rows and {df.shape[1]} columns.")
         st.write(f"Runtime: {time.time()-t:.3f} seconds")
         st.session_state["data"] = df.to_dict()
+        logging.info(f"Dataframe stored in session state.")
 
         with st.container():
             st.subheader("Data profile:")
@@ -66,7 +71,8 @@ def build_data_st(experiment_name):
 
 def main():
     try:
-        experiment_name= setup_page_skeleton()
+        setup_page_skeleton()
+        experiment_name = st.session_state["experiment_name"]
         if experiment_name is not None:
             option = st.selectbox("Select an option:", ["Build data", "Load data"], index=1)
             if (option == "Build data"):
@@ -91,8 +97,9 @@ def main():
                         -  the id column will be assumed equivalent to timestamp. If both are present, the id column will be prioritized.
                     """)
     except Exception as err:
-        st.error(f"Page 2 ran into an error in main")
+        st.error(f"{PAGE_NAME} page ran into an error in the main method.")
+        logging.error(f"{PAGE_NAME} page ran into an error in the main method.\n{err}\n{traceback.format_exc()}")
 
 if __name__ == "__main__":
-    sys.path.insert(1, "./database/")
+    sys.path.insert(1, "./")
     main()
