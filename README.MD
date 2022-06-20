@@ -9,3 +9,9 @@
     - supper class
 - Unit testing
 - Dynamic testing
+
+- Coverage reports
+```bash
+py.test --cov -report=html
+coverage html
+```

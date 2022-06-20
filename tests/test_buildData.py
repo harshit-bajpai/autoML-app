@@ -1,5 +1,6 @@
-from database.buildData import buildData
 import sys
+from database.buildData import buildData
+
 sys.path.insert(1, "./database/")
 
 def test_buildData_default() -> None:
