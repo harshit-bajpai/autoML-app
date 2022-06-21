@@ -72,11 +72,11 @@ def build_data_st(experiment_name):
 def main():
     try:
         setup_page_skeleton()
-        experiment_name = st.session_state["experiment_name"]
-        if experiment_name is not None:
+    
+        if 'experiment_name' in st.session_state:
             option = st.selectbox("Select an option:", ["Build data", "Load data"], index=1)
             if (option == "Build data"):
-                df = build_data_st(experiment_name)
+                df = build_data_st(st.session_state["experiment_name"])
                 st.session_state["data_generator"] = "buildData"
                 # if not df.empty:
                     # prepare data for model training
@@ -96,6 +96,9 @@ def main():
                         Assumptions:
                         -  the id column will be assumed equivalent to timestamp. If both are present, the id column will be prioritized.
                     """)
+        else:
+            exp = RuntimeError("Please ensure you run the previous pages.")
+            st.exception(exp)
     except Exception as err:
         st.error(f"{PAGE_NAME} page ran into an error in the main method.")
         logging.error(f"{PAGE_NAME} page ran into an error in the main method.\n{err}\n{traceback.format_exc()}")
