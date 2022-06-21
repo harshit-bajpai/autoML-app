@@ -1,12 +1,13 @@
+"""
+ETL page for the application.
+"""
+import logging
 import sys
 import time
-import json
-import logging
 import traceback
-import logging
 
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
 PAGE_NAME = "2_ETL"
 
@@ -23,18 +24,20 @@ def setup_page_skeleton():
         return ""
 
 def build_data_st(experiment_name):
-    from database.buildData import buildData
+    from database.build_data import BuildData
 
-    dataObj = buildData(experiment_name)
+    dataObj = BuildData(experiment_name)
     df = dataObj.data
     logging.info(f"buildData object generated.")
+    timestamp_col = False
+    id_col = False
     
     with st.container():
         st.subheader("Build data configuration:")
         n_samples = st.number_input("Number of samples", 100, 100000, 100, 100)
         n_features = st.number_input("Number of features", 20, 1000, 20, 5)
         n_informative = st.number_input("Number of informative features", 10, 500, 10, 10)
-        n_targets = 1 # the applicaion only supports one target
+        n_targets = 1 # the application only supports one target
         noise = st.number_input("Noise", 0.0, 1.0, 0.0, 0.1)
         timestamp_col = st.checkbox("Add timestamp column", False)
         id_col = st.checkbox("Add id column", False)
@@ -44,7 +47,7 @@ def build_data_st(experiment_name):
         logging.info(f"buildData object data generation started.")
         df = dataObj.regression_data(n_samples=n_samples, n_features=n_features, 
             n_informative=n_informative, n_targets=n_targets, noise=noise, 
-            id_col=id_col, timestamp_col=timestamp_col)
+            id_col=id_col, timestamp_col=timestamp_col) 
         logging.info(f"buildData object data generation completed in {time.time() - t:.3f} seconds.")
         logging.info(f"Dataframe generated with {df.shape[0]} rows and {df.shape[1]} columns.")
         st.write(f"Runtime: {time.time()-t:.3f} seconds")

@@ -1,4 +1,4 @@
-# Bulid a web application in Python
+# Build a web application in Python
 
 - Creating classes
   - init method
