@@ -1,5 +1,5 @@
+import logging
 import pandas as pd
-import numpy as np
 from database.randomDateGen import randomDateGen
 
 class buildData:
@@ -7,10 +7,10 @@ class buildData:
     Building data for model training
     """ 
     
-    def __init__(self, experiment_name):
+    def __init__(self, experiment_name: str):
         self.experiment_name = experiment_name
         self.data = pd.DataFrame()
-        print(f"Experiment {self.experiment_name} initialized.")
+        logging.info(f"Experiment {self.experiment_name} buildData object initialized.")
     
     def _create_df_Xy(self):
         """
@@ -34,10 +34,10 @@ class buildData:
         self.data.loc[:,'timestamp'] = random_date_gen.format_ls()
         
     
-    def regression_data(self, n_samples, n_features, 
-                n_informative, n_targets=1, noise=0.0, 
-                shuffle=False, random_state=101, 
-                id_col=False, timestamp_col=False):
+    def regression_data(self, n_samples : int, n_features : int, 
+                n_informative : int, n_targets : int=1, noise : float=0.0, 
+                shuffle : bool=False, random_state : int=101, 
+                id_col : bool=False, timestamp_col : bool=False):
         """
         Generate data for regression
         """

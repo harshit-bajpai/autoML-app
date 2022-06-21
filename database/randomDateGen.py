@@ -16,7 +16,7 @@ class randomDateGen():
         Upper bound for time delta randomizer.
     """
 
-    def __init__(self, n_samples:int, seed:int=101 , max_n_days:int=7):
+    def __init__(self, n_samples: int, seed : int=101 , max_n_days : int=7):
         self.seed = seed
         self.n_samples = n_samples
         self.max_n_days = max_n_days
@@ -37,6 +37,6 @@ class randomDateGen():
         return [self.start_datetime + 
             i*self.timedelta for i in range(self.n_samples)]
     
-    def format_ls(self, fmt:str='%Y-%m-%d %H:%M:%S') -> list:
+    def format_ls(self, fmt : str='%Y-%m-%d %H:%M:%S') -> list:
         return [time.strftime(fmt, time.localtime(i)) \
              for i in self.datetime_ls]
