@@ -21,7 +21,7 @@ class BuildData:
 
     def _create_df_xy(self) -> None:
         """
-        Create dataframe with X and y
+        Create dataframe with x and y
         """
         self.data = pd.DataFrame(
             self.x, columns=[f"feat_{i}" for i in range(self.x.shape[1])]
@@ -56,13 +56,14 @@ class BuildData:
         """
         Generate data for regression
         """
-        self.x, self.y, self.coef = make_regression(
+        self.x, self.y, _ = make_regression(  # type: ignore
             n_samples=n_samples,
             n_features=n_features,
             n_informative=n_informative,
             n_targets=n_targets,
             noise=noise,
             shuffle=shuffle,
+            coef=True,
             random_state=random_state,
         )
         self._create_df_xy()

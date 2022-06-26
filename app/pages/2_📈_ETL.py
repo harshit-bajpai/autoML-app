@@ -28,7 +28,7 @@ def build_data_st(experiment_name):
 
     dataObj = BuildData(experiment_name)
     df = dataObj.data
-    logging.info(f"buildData object generated.")
+    logging.info("buildData object generated.")
     timestamp_col = False
     id_col = False
     
@@ -48,44 +48,31 @@ def build_data_st(experiment_name):
         df = dataObj.regression_data(n_samples=n_samples, n_features=n_features, 
             n_informative=n_informative, n_targets=n_targets, noise=noise, 
             id_col=id_col, timestamp_col=timestamp_col) 
+        st.session_state["data"] = df.to_dict()
+        st.session_state["data_shape"] = str(df.shape)
+        st.session_state["n_features"] = n_features
+        st.session_state["n_targets"] = n_targets
+        if timestamp_col:st.session_state["timestamp_col"] = "timestamp"
+        if id_col:st.session_state["id_col"] = "id"
         logging.info(f"buildData object data generation completed in {time.time() - t:.3f} seconds.")
         logging.info(f"Dataframe generated with {df.shape[0]} rows and {df.shape[1]} columns.")
         st.write(f"Runtime: {time.time()-t:.3f} seconds")
-        st.session_state["data"] = df.to_dict()
         logging.info(f"Dataframe stored in session state.")
-
-        with st.container():
-            st.subheader("Data profile:")
-            st.write(f"Shape of data: {df.shape}")
-            st.session_state["data_shape"] = str(list(df.shape))
-            st.session_state["n_features"] = n_features
-            st.session_state["n_targets"] = n_targets
-            if timestamp_col:st.session_state["timestamp_col"] = "timestamp"
-            if id_col:st.session_state["id_col"] = "id"
-            st.session_state["id_col"] = id_col
-            st.session_state["timestamp_col"] = timestamp_col
-            st.write("Dataframe head:")
-            st.dataframe(df.head())
-            st.write("Dataframe descriptive statistics:")
-            st.dataframe(df.describe().transpose())
-        return df
-    else:
-        return df
+    return df
+    
 
 def main():
     try:
         setup_page_skeleton()
-    
+
+
         if 'experiment_name' in st.session_state:
             option = st.selectbox("Select an option:", ["Build data", "Load data"], index=1)
             if (option == "Build data"):
                 df = build_data_st(st.session_state["experiment_name"])
                 st.session_state["data_generator"] = "buildData"
-                # if not df.empty:
-                    # prepare data for model training
             elif option == "Load data":
                 st.write("Load data functionality coming soon!")
-                st.session_state["data_generator"] = "loadData"
                 with st.expander("Format of data required for loading it to the application"):
                     st.write("""
                         The data must be in a CSV file with the following columns:
@@ -99,9 +86,29 @@ def main():
                         Assumptions:
                         -  the id column will be assumed equivalent to timestamp. If both are present, the id column will be prioritized.
                     """)
+
+            if "data" in st.session_state:
+                with st.container():
+                    st.subheader("Data profile:")
+                    st.write(f'Shape of data: {df.shape}')
+                    st.write("Dataset Sample Rows:")
+                    st.dataframe(df.head())
+                    st.write("Descriptive statistics:")
+                    st.dataframe(df.describe().transpose())  
+                
+                with st.container():
+                    st.subheader("Preprocess Dataset for model development")
+                    st.text("Handling non-numeric data:")
+                    st.text("Handling missing values:")
+                    st.text("Normalizing data:")
+                    st.selectbox("Select a method:", ["MinMax", "Standard", "MinMax"])
+                    st.text("Splitting data into training and test sets:")
+
+
         else:
             exp = RuntimeError("Please ensure you run the previous pages.")
             st.exception(exp)
+        
     except Exception as err:
         st.error(f"{PAGE_NAME} page ran into an error in the main method.")
         logging.error(f"{PAGE_NAME} page ran into an error in the main method.\n{err}\n{traceback.format_exc()}")

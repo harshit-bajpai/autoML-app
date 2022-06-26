@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import time
 import traceback
 from logging.handlers import TimedRotatingFileHandler
@@ -12,8 +13,11 @@ def setup_logging(req_id: str, log_level: str) -> None:
     """
     Set up the logging for the application with TimedRotatingFileHandler
     """
-    
-    filename = f"st_app.log"
+
+    if not os.path.exists("./logs"):
+        os.mkdir("./logs")
+
+    filename = "st_app.log"
     filepath = f"./logs/{filename}"
 
     for handler in logging.root.handlers[:]:
@@ -21,12 +25,13 @@ def setup_logging(req_id: str, log_level: str) -> None:
 
     handler = TimedRotatingFileHandler(filepath,
                                     when="midnight")
-    
-    format = '%(levelname)s %(asctime)s '+ str(req_id) +' %(message)s '
+
+    format = f'%(levelname)s %(asctime)s {req_id} %(message)s '
     logging.basicConfig(format=format,
                         datefmt='%m/%d/%Y %I:%M:%S %p',
                         level=f"{log_level}",
                         handlers=[handler])
+
 
     logging.info(f"Logging started for {req_id} experiment")
 
@@ -84,5 +89,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
-    
