@@ -9,6 +9,7 @@ Preprocessing the dataframe for model training.
 import logging
 from typing import Tuple, Union
 
+import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
@@ -41,7 +42,6 @@ class PreprocessData:
         data: pd.DataFrame = pd.DataFrame(),
         test_ratio: float = 0.2,
         shuffle_flag: bool = False,
-        sel_scaler: str = "minmax",
         target_col: str = "target",
     ) -> None:
         self.logger = logging.getLogger(__name__)
@@ -49,23 +49,22 @@ class PreprocessData:
         self.test_ratio = test_ratio
         self.target_col = target_col
         self.shuffle_flag = shuffle_flag
-        self.sel_scaler = sel_scaler
-        self.X_train = pd.DataFrame()
-        self.y_train = pd.Series(dtype="object")
-        self.X_test = pd.DataFrame()
-        self.y_test = pd.Series(dtype="object")
         self.logger.info("PreprocessData object initialized.")
 
-    def _handle_non_numeric(self) -> None:
+    def handle_non_numeric(self) -> Union[str, np.ndarray]:
         """
         Handle non-numeric data
         """
         cols_to_drop = self.data.select_dtypes(include=["object"]).columns.values
-        self.data = self.data.drop(cols_to_drop, axis=1)
-        self.logger.info("Dropping non-numeric data for columns: %s", cols_to_drop)
-        self.logger.info("Data shape: %s", self.data.shape)
+        if len(cols_to_drop) > 0:
+            self.data = self.data.drop(cols_to_drop, axis=1)
+            self.logger.debug("Dropping non-numeric data for columns: %s", cols_to_drop)
+            self.logger.debug("Data shape: %s", self.data.shape)
+            return cols_to_drop
+        self.logger.debug("No non-numeric data found.")
+        return "No non-numeric data found."
 
-    def _handle_missing_values(self) -> None:
+    def handle_missing_values(self) -> dict:
         """
         Handle missing values
         """
@@ -73,11 +72,15 @@ class PreprocessData:
         cols_to_drop = missing_values[
             missing_values > MISSING_VALUE_THRESHOLD
         ].index.values
+        ms_values: dict = {}
         if len(cols_to_drop) > 0:
             self.data.drop(columns=cols_to_drop, inplace=True)
             self.logger.info(
                 "Dropping columns with missing values for columns: %s", cols_to_drop
             )
+            ms_values[
+                "cols_drop"
+            ] = f"Dropping columns with missing values greater than {MISSING_VALUE_THRESHOLD*100} \n{cols_to_drop}%"
             self.logger.info("Data shape: %s", self.data.shape)
 
         if len(missing_values) - len(cols_to_drop) > 0:
@@ -86,42 +89,49 @@ class PreprocessData:
             self.data = pd.DataFrame(
                 imputer.fit_transform(self.data), columns=self.data.columns
             )
+            ms_values[
+                "drop_na"
+            ] = "Imputed missing values based on strategy SimpleImputer (mean)"
             self.logger.info("Imputed missing values.")
 
-    def _split_data(self) -> None:
+        return ms_values
 
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+    def split_data(self) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+
+        X_train, X_test, y_train, y_test = train_test_split(
             self.data.drop(columns=self.target_col),
             self.data[self.target_col],
             test_size=self.test_ratio,
             shuffle=self.shuffle_flag,
         )
         self.logger.info("Data split into train/test.")
+        return X_train, X_test, y_train, y_test
 
-    def _scale_data(self) -> None:
+    def scale_data(
+        self, X_train, X_test, sel_scaler
+    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
         Scale/normalize data
         """
 
-        scaler = SCALER_DICT[self.sel_scaler]
-        self.X_train = pd.DataFrame(
-            scaler.fit_transform(self.X_train), columns=self.X_train.columns
+        scaler = SCALER_DICT[sel_scaler]
+        X_train_scaled = pd.DataFrame(
+            scaler.fit_transform(X_train), columns=X_train.columns
         )
-        self.X_test = pd.DataFrame(
-            scaler.transform(self.X_test), columns=self.X_test.columns
-        )
+        X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
         self.logger.info("Scaled data.")
+        return X_train_scaled, X_test_scaled
 
-    def preprocess_handler(
-        self, return_data: bool = False
-    ) -> Union[None, Tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]]:
-        """
-        Preprocess data
-        """
-        self._handle_non_numeric()
-        self._handle_missing_values()
-        self._split_data()
-        self._scale_data()
-        self.logger.info("Preprocess data finished.")
-        if return_data:
-            return self.X_train, self.y_train, self.X_test, self.y_test
+    # def preprocess_handler(
+    #     self, return_data: bool = False
+    # ) -> Union[None, Tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]]:
+    #     """
+    #     Preprocess data
+    #     """
+    #     self._handle_non_numeric()
+    #     # self._handle_missing_values()
+    #     self._split_data()
+    #     self._scale_data()
+    #     self.logger.info("Preprocess data finished.")
+    #     if return_data:
+    #         return self.X_train, self.y_train, self.X_test, self.y_test

@@ -13,15 +13,13 @@ PAGE_NAME = "2_ETL"
 
 def setup_page_skeleton():
     try:
-
         st.set_page_config(page_title="ETL", page_icon="📈", layout="wide")
         st.markdown("# 📈 Extract, Transform, Load")
-        
     except Exception as err:
         st.error(f"{PAGE_NAME} page ran into an error while setting up skeleton.")
         logging.error(f"{PAGE_NAME} page ran into an error while setting up skeleton.\
             \n{err}\n{traceback.format_exc()}")
-        return ""
+
 
 def build_data_st(experiment_name):
     from database.build_data import BuildData
@@ -42,7 +40,7 @@ def build_data_st(experiment_name):
         timestamp_col = st.checkbox("Add timestamp column", False)
         id_col = st.checkbox("Add id column", False)
 
-    if st.button("▶️ Run"):
+    if st.button("▶️ Build Data"):
         t = time.time()
         logging.info(f"buildData object data generation started.")
         df = dataObj.regression_data(n_samples=n_samples, n_features=n_features, 
@@ -60,12 +58,9 @@ def build_data_st(experiment_name):
         logging.info(f"Dataframe stored in session state.")
     return df
     
-
 def main():
     try:
         setup_page_skeleton()
-
-
         if 'experiment_name' in st.session_state:
             option = st.selectbox("Select an option:", ["Build data", "Load data"], index=1)
             if (option == "Build data"):
@@ -94,16 +89,7 @@ def main():
                     st.write("Dataset Sample Rows:")
                     st.dataframe(df.head())
                     st.write("Descriptive statistics:")
-                    st.dataframe(df.describe().transpose())  
-                
-                with st.container():
-                    st.subheader("Preprocess Dataset for model development")
-                    st.text("Handling non-numeric data:")
-                    st.text("Handling missing values:")
-                    st.text("Normalizing data:")
-                    st.selectbox("Select a method:", ["MinMax", "Standard", "MinMax"])
-                    st.text("Splitting data into training and test sets:")
-
+                    st.dataframe(df.describe().transpose())
 
         else:
             exp = RuntimeError("Please ensure you run the previous pages.")
