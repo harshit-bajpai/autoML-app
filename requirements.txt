@@ -1,0 +1,26 @@
+# python=3.10.4
+# mlEnvPy310
+
+pandas
+numpy
+pyarrow
+fastparquet
+
+jupyterlab
+
+scikit_learn
+# xgboost
+# lightgbm
+# shap
+# optuna
+
+seaborn
+matplotlib
+streamlit
+
+pip_audit
+pytest
+pytest_cov
+mypy
+pylint
+black

@@ -1,0 +1,13 @@
+[logger]
+level = "info"
+
+[client]
+showErrorDetails = false 
+
+[browser]
+serverAddress = "localhost" # IP address of the server
+serverPort = 8501
+
+[theme]
+base = "dark"
+font="sans serif"

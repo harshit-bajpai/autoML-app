@@ -1,0 +1,8 @@
+#cache files
+*.pyc
+.devcontainer/
+
+#log
+logs/
+*.log
+.coverage
