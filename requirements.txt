@@ -1,5 +1,4 @@
 # python=3.10.4
-# mlEnvPy310
 
 pandas
 numpy
@@ -9,10 +8,6 @@ fastparquet
 jupyterlab
 
 scikit_learn
-# xgboost
-# lightgbm
-# shap
-# optuna
 
 seaborn
 matplotlib
