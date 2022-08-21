@@ -28,14 +28,17 @@ def main():
         setup_page_skeleton()
         if "X_train" in st.session_state:
             model_name = st.selectbox("Select a model:", ["Linear Regression", "AutoML Routine"])
+            st.session_state["model_name"] = model_name
             if st.button("▶️ Train and Evaluate Model"):
                 X_train = pd.DataFrame(st.session_state["X_train"])
                 y_train = pd.Series(st.session_state["y_train"])
                 X_test = pd.DataFrame(st.session_state["X_test"])
                 y_test = pd.Series(st.session_state["y_test"])
                 model_train_obj = model_train_st(X_train, y_train, X_test, y_test, model_name)
+                st.session_state["model_params"] = model_train_obj.model_params
                 st.text(f"{model_name} model trained and evaluated.")
                 st.text(f"Model evaluation metrics \n{model_train_obj.get_metrics()}")
+                st.session_state["metrics"] = model_train_obj.get_metrics()
         else:
             exp = RuntimeError("Data not found. Please ensure you have uploaded a dataset.")
             st.exception(exp)

@@ -18,10 +18,12 @@ def preprocess_data_st(df):
         st.text(f"{ms_values_dict['cols_drop']}")
     st.text(["Missing values not found!" if "drop_na" in ms_values_dict.keys() else f"{ms_values_dict['drop_na']}"])
     st.text(f"Split data with {preprocessObj.test_ratio} test ratio.")
+    st.session_state["train_test_split_ratio"] = preprocessObj.test_ratio
     X_train, X_test, y_train, y_test = preprocessObj.split_data()
     st.text(f"X_train shape: {X_train.shape}")
     st.text(f"X_test shape: {X_test.shape}")
     scale_method = st.selectbox("Select a method:", ["MinMax", "Standard", "MinMax"])
+    st.session_state["scaler"] = scale_method
     X_train, X_test = preprocessObj.scale_data(X_train, X_test, scale_method.lower())
     st.text(f"Scaled data with {scale_method} scaling.")
     st.session_state["X_train"] = X_train.to_dict()

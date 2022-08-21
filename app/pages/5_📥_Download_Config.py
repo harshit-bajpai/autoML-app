@@ -1,5 +1,7 @@
 import time
+
 import streamlit as st
+
 
 def setup_page_skeleton():
     st.set_page_config(page_title="Download Config", page_icon="📥", layout="wide")
@@ -20,15 +22,12 @@ def create_json_config() -> dict:
                     "timestamp_col": st.session_state["timestamp_col"] if "timestamp_col" in st.session_state else "",
                     "preprocessing_info":
                         {"scaler": st.session_state["scaler"] if "scaler" in st.session_state else "",
-                        "imputer" : st.session_state["imputer"] if "imputer" in st.session_state else "",
-                        "train_test_split_ratio" : ""},
+                        "imputer" : None,
+                        "train_test_split_ratio" : st.session_state["train_test_split_ratio"] if "train_test_split_ratio" in st.session_state else ""},
             "model_train_info":
-                {"model_type": "",
-                    "model_name": "",
-                    "model_params": {},
-                    "metrics": {}},
-            "model_eval_info":
-                {"metrics": {}}
+                {  "model_name": st.session_state["model_name"] if "model_name" in st.session_state else "",
+                    "model_params": st.session_state["model_params"] if "model_params" in st.session_state else "",
+                    "metrics": st.session_state["metrics"] if "metrics" in st.session_state else ""}
             }
         return config
     except Exception as err:
